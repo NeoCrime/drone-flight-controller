@@ -1,10 +1,4 @@
-/**
- * The software is provided "as is", without any warranty of any kind.
- * Feel free to edit it if needed.
- *
- * @author lobodol <grobodol@gmail.com>
- */
-
+//------------------------------Equinox---------------------------------------
 // ---------------------------------------------------------------------------
 #include <Wire.h>
 // ------------------- Define some constants for convenience -----------------
@@ -386,7 +380,7 @@ void configureChannelMapping() {
 
 /**
  * Configure gyro and accelerometer precision as following:
- *  - accelerometer: ±8g
+ *  - accelerometer: ±4g
  *  - gyro: ±500°/s
  *
  * @see https://www.invensense.com/wp-content/uploads/2015/02/MPU-6000-Register-Map1.pdf
@@ -401,7 +395,7 @@ void setupMpu6050Registers() {
     // Configure the gyro's sensitivity
     Wire.beginTransmission(MPU_ADDRESS); // Start communication with MPU
     Wire.write(0x1B);                    // Request the GYRO_CONFIG register
-    Wire.write(0x08);                    // Apply the desired configuration to the register : ±500°/s
+    Wire.write(0x0);                    // Apply the desired configuration to the register : ±500°/s
     Wire.endTransmission();              // End the transmission
 
     // Configure the acceleromter's sensitivity
@@ -514,10 +508,10 @@ void resetGyroAngles() {
  * Reset motors' pulse length to 1000µs to totally stop them.
  */
 void stopAll() {
-    pulse_length_esc1 = 1000;
-    pulse_length_esc2 = 1000;
-    pulse_length_esc3 = 1000;
-    pulse_length_esc4 = 1000;
+    pulse_length_esc1 = 50;
+    pulse_length_esc2 = 50;
+    pulse_length_esc3 = 50;
+    pulse_length_esc4 = 50;
 }
 
 /**
@@ -559,9 +553,9 @@ float calculateSetPoint(float angle, int channel_pulse) {
 
     // Need a dead band of 16µs for better result
     if (channel_pulse > 1508) {
-        set_point = channel_pulse - 1508;
-    } else if (channel_pulse <  1492) {
-        set_point = channel_pulse - 1492;
+        set_point = channel_pulse - 1600;
+    } else if (channel_pulse <  1442) {
+        set_point = channel_pulse - 1442;
     }
 
     set_point -= level_adjust;
@@ -594,10 +588,10 @@ float calculateYawSetPoint(int yaw_pulse, int throttle_pulse) {
  */
 void compensateBatteryDrop() {
     if (isBatteryConnected()) {
-        pulse_length_esc1 += pulse_length_esc1 * ((1240 - battery_voltage) / (float) 3500);
-        pulse_length_esc2 += pulse_length_esc2 * ((1240 - battery_voltage) / (float) 3500);
-        pulse_length_esc3 += pulse_length_esc3 * ((1240 - battery_voltage) / (float) 3500);
-        pulse_length_esc4 += pulse_length_esc4 * ((1240 - battery_voltage) / (float) 3500);
+        pulse_length_esc1 += pulse_length_esc1 * ((13600 - battery_voltage) / (float) 16000);
+        pulse_length_esc2 += pulse_length_esc2 * ((13600 - battery_voltage) / (float) 16000);
+        pulse_length_esc3 += pulse_length_esc3 * ((13600 - battery_voltage) / (float) 16000);
+        pulse_length_esc4 += pulse_length_esc4 * ((13600 - battery_voltage) / (float) 16000);
     }
 }
 
